@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>EveryRegExp</title>
+	<script src="https://cdn.jsdelivr.net/npm/verbal-expressions@1.0.2/dist/verbalexpressions.min.js"></script>
+	<script>
+		const textChange = () => {
+			const regStr = 'return VerEx()'+ document.querySelector('#input').value
+			try {
+				const result = new Function(regStr)()
+				if(typeof result == 'undefined' || typeof result == 'function') throw 'error'
+				document.querySelector('#output').value = result
+			} catch(e) {
+				document.querySelector('#output').value = '올바른 수식이 아닙니다.'
+			}
+		}
+	</script>
+</head>
+<body>
+	<div>
+		<textArea id="input" oninput="textChange()"></textArea>
+		<textArea id="output"></textArea>
+	</div>
+</body>
+</html>
