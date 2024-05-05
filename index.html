@@ -3,25 +3,107 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>EveryRegExp</title>
-	<script src="https://cdn.jsdelivr.net/npm/verbal-expressions@1.0.2/dist/verbalexpressions.min.js"></script>
-	<script>
-		const textChange = () => {
-			const regStr = 'return VerEx()'+ document.querySelector('#input').value
-			try {
-				const result = new Function(regStr)()
-				if(typeof result == 'undefined' || typeof result == 'function') throw 'error'
-				document.querySelector('#output').value = result
-			} catch(e) {
-				document.querySelector('#output').value = '올바른 수식이 아닙니다.'
-			}
-		}
-	</script>
+
+	<meta http-equiv="content-language" content="kr">
+	<meta name="title" content="EveryRegEx">
+	<meta name="author" content="숭아">
+	<meta name="description" content="정규표현식 작성을 더욱 쉽게 도와줍니다.">
+	<meta name="keywords" content="숭아, 개발, EveryRegEx, 정규표현식, Regex, RegExp, Regular Expression">
+	<meta property="og:locale" content="ko_KR">
+	<meta property="og:type" content="website">
+	<meta property="og:rich_attachment" content="true">
+	<meta property="og:site_name" content="EveryRegEx">
+	<meta property="og:title" content="EveryRegEx">
+	<meta property="og:description" content="정규표현식 작성을 더욱 쉽게 도와줍니다.">
+	<meta property="og:keywords" content="숭아, 개발, EveryRegEx, 정규표현식, Regex, RegExp, Regular Expression">
+	<meta property="og:image" content="http://sung-a.duckdns.org/peach.png">
+	<meta property="og:url" content="http://everyRegEx.sung-a.duckdns.org">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:site" content="EveryRegEx">
+	<meta name="twitter:title" content="EveryRegEx">
+	<meta name="twitter:description" content="정규표현식 작성을 더욱 쉽게 도와줍니다.">
+	<meta name="twitter:keywords" content="숭아, 개발, EveryRegEx, 정규표현식, Regex, RegExp, Regular Expression">
+	<meta name="twitter:image" content="http://sung-a.duckdns.org/peach.png">
+	<meta name="twitter:creator" content="숭아">
+	<meta itemprop="name" content="EveryRegEx">
+	<meta itemprop="description" content="정규표현식 작성을 더욱 쉽게 도와줍니다.">
+	<meta itemprop="keywords" content="숭아, 개발, EveryRegEx, 정규표현식, Regex, RegExp, Regular Expression">
+	<meta itemprop="image" content="http://sung-a.duckdns.org/peach.png">
+	<meta name="apple-mobile-web-app-title" content="EveryRegEx">
+	<link rel="icon" href="./img/favicon.ico">
+
+	<title>EveryRegEx</title>
+	<link href="./lib/bootstrap5.3.3.min.css" rel="stylesheet">
+	<script src="./lib/verbalexpressions1.0.2.min.js"></script>
+	<script src="./js/index.js"></script>
+	<style>
+		textarea { resize: none; }
+		h5 { margin-top: .3rem;font-weight: bold; }
+
+		.lightMode { color: black; background-color: white; }
+		.darkMode { color: white; background-color: #222; }
+		.navbar.lightMode { color: black; background-color: #eeefff; }
+		.navbar.darkMode { color: white; background-color: #444ccc; }
+		.navbar-brand { color: unset; }
+		.darkMode.form-control:focus { color: unset; background-color: unset; border-color: unset;}
+	</style>
 </head>
-<body>
-	<div>
-		<textArea id="input" oninput="textChange()"></textArea>
-		<textArea id="output"></textArea>
+<body class="lightMode">
+
+<nav class="navbar fixed-top lightMode">
+	<div class="container-fluid px-3">
+		<div class="navbar-brand">EveryRegEx</div>
+		<div class="d-flex" role="search">
+			<div class="btn btn-outline-info me-2" onclick="openLink('https://sung-a.duckdns.org')">개발자</div>
+			<div class="btn btn-outline-secondary" id="mode" onclick="modeChange()">Dark</div>
+		</div>
 	</div>
+</nav>
+
+<div class="p-2">
+	<div class="row mt-5 pt-3 px-0 mx-0">
+		<div class="col-12 mb-3">
+			<details open>
+				<summary>단축버튼</summary>
+				<div class="pt-2" id="clickList"></div>
+			</details>
+		</div>
+
+		<div class="col-12 mb-3">
+			표현식 : <span class="btn text-primary pb-2" id="output" onclick="copyText(this)"></span>
+		</div>
+
+		<div class="col-12 mb-3">
+			<label for="input" class="form-label mb-0">조건</label>
+			<textarea class="form-control lightMode" id="condition" oninput="conditionChange()"></textarea>
+		</div>
+
+		<div class="col-12 col-lg-6 mb-3">
+			<label for="test" class="form-label mb-0">테스트 (엔터를 기준으로 한줄씩 테스트합니다)</label>
+			<textarea class="form-control lightMode" id="test" oninput="testChange()"></textarea>
+		</div>
+		<div class="col-12 col-lg-6 mb-3">
+			<label for="answer" class="form-label mb-0">결과</label>
+			<div class="border rounded p-2 text-break" id="answer" style="min-height: 60px;">
+			</div>
+		</div>
+
+		<div class="col-12 col-lg-6 mb-3">
+			<details>
+				<summary>조건 설명</summary>
+				<div id="tipList"></div>
+			</details>
+		</div>
+		<div class="col-12 col-lg-6 mb-3">
+			<details>
+				<summary>사용법</summary>
+				<div>
+
+				</div>
+			</details>
+		</div>
+	</div>
+</div>
+<input class="d-none" id="clipboard">
 </body>
 </html>
