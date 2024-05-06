@@ -245,7 +245,7 @@ const trans = [
     view: '.이메일()',
     classify: 'reg',
     kor: '.이메일(',
-    eng: `.add("[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\\.[a-zA-Z]{2,3}"`,
+    eng: `.add("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,4}"`,
     add: '.이메일()',
     des: `<h5>이메일을 판단합니다.</h5>`,
   },
@@ -472,7 +472,12 @@ const changeAnswer = () => {
   const hasGFlag = conditionFlag[conditionFlag.length-1].includes("g")
 
   const testStr = `${regStr}.stopAtFirst(false).toRegExp()`
+
+  const nullErrMsg = (!$("#condition").value || !$("#test").value) ? "조건 및 테스트를 적어주세요" : ""
+
   try {
+    if(nullErrMsg) throw nullErrMsg
+
     const condition = new Function(testStr)()
     const testList = $("#test").value.split("\n")
 
@@ -483,16 +488,29 @@ const changeAnswer = () => {
       const matchList = test.match(condition)
       let resultLine = ""
 
-      // 일치부분 색입히기
+      // 결과 색입히기
       if(matchList) {
-        const splitList = test.split(condition)
-        splitList.forEach((split, i) => {
+        let tmpStr = test
+        let notMatchedList = []
+        let lastIndex = 0
+        let matched
+
+        // 불일치 리스트
+        while((matched = condition.exec(tmpStr)) !== null) {
+          notMatchedList.push(tmpStr.substring(lastIndex, matched.index))
+          lastIndex = matched.index + matched[0].length
+        }
+        notMatchedList.push(tmpStr.substring(lastIndex))
+
+        // 일치리스트, 불일치리스트 분류해서 색입히기
+        notMatchedList.forEach((li, i) => {
           if(hasGFlag || (!hasGFlag && i===0)) {
-            resultLine += `${split.replaceAll(" ", "&nbsp;")}<span class="bg-success">${ matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "" }</span>`
+            resultLine += `${li.replaceAll(" ", "&nbsp;")}<span class="bg-success">${ matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "" }</span>`
           } else {
-            resultLine += split.replaceAll(" ", "&nbsp;") + (matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "")
+            resultLine += li.replaceAll(" ", "&nbsp;") + (matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "")
           }
         })
+
       } else {
         resultLine = test.replaceAll(" ", "&nbsp;")
       }
@@ -501,7 +519,7 @@ const changeAnswer = () => {
     })
     $("#answer").innerHTML = result
   } catch(e) {
-    $("#answer").innerHTML = "오류"
+    $("#answer").innerHTML = nullErrMsg || "오류"
   }
 }
 
@@ -592,10 +610,10 @@ window.onload = () =>{
 const makeAddList = () => {
   let btnStr = ""
   let tipStr = `<table>
-											  <colgroup>
-													<col style="min-width: 120px;" />
-													<col />
-												</colgroup>`
+                  <colgroup>
+                    <col style="min-width: 120px;" />
+                    <col />
+                  </colgroup>`
   let exClass = ""
 
   trans.forEach(li => {
@@ -608,12 +626,12 @@ const makeAddList = () => {
                   ${ li.view }
                 </span>`
     tipStr += `<tr>
-										<td class="align-top text-end pe-2 pt-1">
-											<div class="btn btn-sm btn-${ color[li.classify] }" onclick={addToCondition('${ li.add }')}>${ li.view }</div>
-											<div class="py-1"></div>
-										</td>
-										<td class="align-middle"><pre>${ li.des.replace(/(?: ){2,}/gm , '') }</pre><div class="py-1"></div></td>
-									</tr>`
+                  <td class="align-top text-end pe-2 pt-1">
+                    <div class="btn btn-sm btn-${ color[li.classify] }" onclick={addToCondition('${ li.add }')}>${ li.view }</div>
+                    <div class="py-1"></div>
+                  </td>
+                  <td class="align-middle"><pre>${ li.des.replace(/(?: ){2,}/gm , '') }</pre><div class="py-1"></div></td>
+                </tr>`
   })
   tipStr += "</table>"
 
