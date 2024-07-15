@@ -489,7 +489,7 @@ const changeAnswer = () => {
       let resultLine = ""
 
       // 결과 색입히기
-      if(matchList) {
+      if(matchList && matchList[0]) {
         let tmpStr = test
         let notMatchedList = []
         let lastIndex = 0
