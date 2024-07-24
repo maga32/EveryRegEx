@@ -39,6 +39,16 @@ const trans = [
               this is test => true`,
   },
   {
+    view: '.첫일치까지()',
+    classify: 'reg',
+    kor: /\.첫일치까지\("(.*?)"\)/g,
+    eng: `.add(\`.*?$1\`)`,
+    add: '.첫일치까지("")',
+    des: `<h5>앞의 내용부터 처음으로 일치하는 부분까지만 선택합니다. [. + ( ) 등의 일부 기호는 백슬래시(\\\\)와 함께 사용해야 합니다.]</h5>
+          ex) .일치("m").첫일치까지("e")
+              I am happy elephant => m happy e`,
+  },
+  {
     view: '.가능()',
     classify: 'reg',
     kor: '.가능(',
@@ -133,11 +143,23 @@ const trans = [
     kor: '.제외(',
     eng: '.not(',
     add: '.제외("")',
-    des: `<h5>내부의 문자와 일치시 false를 반환합니다.</h5>
-          ex) .일치("There are ").제외("34")
-              There are 3 pencils => true
-              There are 134 pencils => true
-              There are 345 pencils => false`,
+    des: `<h5>조건과 일치시 false를 반환합니다.</h5>
+          ex) .일치("There are").제외("34")
+              There are 34 pencils => true (There are)
+              There are234 pencils => true (There are)
+              There are34 pencils => false`,
+  },
+  {
+    view: '.미포함()',
+    classify: 'reg',
+    kor: /\.미포함\("(.*?)"\)/g,
+    eng: `.add(\`(?:(?!$1)[^])*\`)`,
+    add: '.미포함("")',
+    des: `<h5>해당 구절이 조건을 포함하는 경우 false를 반환합니다. [. + ( ) 등의 일부 기호는 백슬래시(\\\\)와 함께 사용해야 합니다.]</h5>
+          ex) .일치("There are").미포함("34").일치("pencils")
+              There are 34 pencils => false
+              There are 1342 pencils => false
+              There are 314 pencils => true`,
   },
   {
     view: '.범위()',
@@ -499,6 +521,7 @@ const changeAnswer = () => {
         while((matched = condition.exec(tmpStr)) !== null) {
           notMatchedList.push(tmpStr.substring(lastIndex, matched.index))
           lastIndex = matched.index + matched[0].length
+          if(matched.input == test) break;
         }
         notMatchedList.push(tmpStr.substring(lastIndex))
 
