@@ -506,36 +506,32 @@ const changeAnswer = () => {
     let result = ""
 
     // 각 라인별 테스트
-    testList.forEach((test)=>{
-      const matchList = test.match(condition)
+    testList.forEach((line)=>{
+      const matchList = line.match(condition)
       let resultLine = ""
 
       // 결과 색입히기
       if(matchList && matchList[0]) {
-        let tmpStr = test
         let notMatchedList = []
         let lastIndex = 0
+        let loopSize = 1
         let matched
 
-        // 불일치 리스트
-        while((matched = condition.exec(tmpStr)) !== null) {
-          notMatchedList.push(tmpStr.substring(lastIndex, matched.index))
+        while((matched = condition.exec(line)) !== null) {
+          // 빈 문자열과의 매칭방지
+          if(matched[0] === '') break
+          // 불일치 부분 추가
+          resultLine += line.slice(lastIndex, matched.index).replaceAll(" ", "&nbsp;")
+          // 일치 부분 추가
+          resultLine += `<span class="bg-success">${matched[0].replaceAll(" ", "&nbsp;")}</span>`
           lastIndex = matched.index + matched[0].length
-          if(matched.input == test) break;
+          // 전역플래그가 아닌경우 한번만 작동
+          if(!hasGFlag) break
         }
-        notMatchedList.push(tmpStr.substring(lastIndex))
-
-        // 일치리스트, 불일치리스트 분류해서 색입히기
-        notMatchedList.forEach((li, i) => {
-          if(hasGFlag || (!hasGFlag && i===0)) {
-            resultLine += `${li.replaceAll(" ", "&nbsp;")}<span class="bg-success">${ matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "" }</span>`
-          } else {
-            resultLine += li.replaceAll(" ", "&nbsp;") + (matchList[i] ? matchList[i].replaceAll(" ", "&nbsp;") : "")
-          }
-        })
-
+        // 남은 불일치 부분 추가
+        resultLine += line.slice(lastIndex).replaceAll(" ", "&nbsp;")
       } else {
-        resultLine = test.replaceAll(" ", "&nbsp;")
+        resultLine = line.replaceAll(" ", "&nbsp;")
       }
 
       result += `<span class="bg-danger">${ resultLine }</span><br>`
