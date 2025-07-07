@@ -521,17 +521,17 @@ const changeAnswer = () => {
           // 빈 문자열과의 매칭방지
           if(matched[0] === '') break
           // 불일치 부분 추가
-          resultLine += line.slice(lastIndex, matched.index).replaceAll(" ", "&nbsp;")
+          resultLine += escapeWords(line.slice(lastIndex, matched.index))
           // 일치 부분 추가
-          resultLine += `<span class="bg-success">${matched[0].replaceAll(" ", "&nbsp;")}</span>`
+          resultLine += `<span class="bg-success">${escapeWords(matched[0])}</span>`
           lastIndex = matched.index + matched[0].length
           // 전역플래그가 아닌경우 한번만 작동
           if(!hasGFlag) break
         }
         // 남은 불일치 부분 추가
-        resultLine += line.slice(lastIndex).replaceAll(" ", "&nbsp;")
+        resultLine += escapeWords(line.slice(lastIndex))
       } else {
-        resultLine = line.replaceAll(" ", "&nbsp;")
+        resultLine = escapeWords(line)
       }
 
       result += `<span class="bg-danger">${ resultLine }</span><br>`
@@ -541,6 +541,9 @@ const changeAnswer = () => {
     $("#answer").innerHTML = nullErrMsg || "오류"
   }
 }
+
+// 결과 표시부분 escape
+const escapeWords = str => str.replaceAll(" ", "&nbsp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
 
 // 클립보드 복사
 const copyText = (e) => {
